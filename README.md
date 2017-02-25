@@ -97,17 +97,19 @@
 
 **проверим репликацию введя некоторые данные в tarantool:**
 
+host1:
 
-
-    host1:box.schema.space.create('tarantools')
-    host1:box.space.tarantools:create_index('primary', {type = 'tree', parts = {1, 'UNSIGNED'}})
-    host1:box.space.tarantools.select(box.space.tarantools,{})
+    box.schema.space.create('tarantools')
+    box.space.tarantools:create_index('primary', {type = 'tree', parts = {1, 'UNSIGNED'}})
+    box.space.tarantools.select(box.space.tarantools,{})
+    box.space.tarantools:auto_increment{'Lycosa', 'Lycosa anclata'}
+host2:    
     
-    host1:box.space.tarantools:auto_increment{'Lycosa', 'Lycosa anclata'}
+    box.space.tarantools:auto_increment{'Lycosa', 'Lycosa accurata'}
     
-    host2:box.space.tarantools:auto_increment{'Lycosa', 'Lycosa accurata'}
+host1:
     
-    host1:box.space.tarantools:select{}
+    box.space.tarantools:select{}
  должны высветится два элемента 
 
 ##################
@@ -120,6 +122,11 @@
     	logger = docker.log,
     	replication_source = {replicator:password@90.156.141.158:3301}, {replicator:password@172.31.27.169:3302} }
     box.space._cluster:select({0}, {iterator = 'GE'})
+
+host3:
+    
+    box.space.tarantools:select{}
+ должны высветится три элемента 
 
 ##################
 #Part 6 - логи  ##
@@ -140,15 +147,15 @@
 
 
 # Полезные Комманды: #
-    docker run --name mytarantool -d tarantool/tarantool:1.7
-     docker run --name wtf -d -p 3302:3301 -v /opt/cloud/data:/var/lib/tarantool tarantool/tarantool
+    
+    docker run --name wtf -d -p 3302:3301 -v /opt/cloud/data:/var/lib/tarantool tarantool/tarantool
 
     export TARANTOOL_CLOUD_HOST=localhost:5061
     
-    echo 'working instances:'
+    echo 'запущенные instances:'
     ./taas  -H localhost:5061 ps
     
-    echo 'create group'
+    echo 'создание group'
     ./taas -H localhost:5061 run
 
 
