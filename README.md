@@ -1,3 +1,6 @@
+## Задание: 
+## На host-машине развернуть tarantool/cloud на кластере из 3х виртуальных машинах с Ubuntu.  
+
 ########################################
 ## Part 1 - окружение и Инсталляция  ###
 ########################################
@@ -98,6 +101,7 @@
 #######################
 
 >  подключаем хост2 *ip=172.31.27.169* в кластер и настраиваем репликацию 
+>  Повторяем шаги Part2 вносим изменения, добавляя $host1=90.156.141.158
 
     box.cfg{
       listen = 3301,
@@ -106,7 +110,7 @@
     }
     box.space._cluster:select({0}, {iterator = 'GE'})
 
-Должен появиться id (sha256) первого хоста
+В логах при выполении select должен появиться id контейнера (sha256) первого хоста
 
 #######################
 #Part 4 -Replication ##
@@ -121,24 +125,33 @@
 
 host1:
 
+    docker ps
+    docker exec -t -i af8f8ff4038841e292c1e111af351c55 /bin/sh
+    tarantool
+
     box.schema.space.create('tarantools')
     box.space.tarantools:create_index('primary', {type = 'tree', parts = {1, 'UNSIGNED'}})
     box.space.tarantools.select(box.space.tarantools,{})
     box.space.tarantools:auto_increment{'Lycosa', 'Lycosa anclata'}
-host2:    
-    
+
+host2: 
+
+    docker ps
+    docker exec -t -i af8f8ff4038841e292c1e111af351c55 /bin/sh
+    tarantool    
     box.space.tarantools:auto_increment{'Lycosa', 'Lycosa accurata'}
     
 host1:
     
     box.space.tarantools:select{}
- должны высветится два элемента 
+
+В логах по команде select должны высветится два элемента 
 
 ##################
 #Part 5 -хост 3 ##
 ##################
 > Добавить третью виртуальную машину в кластер. Назовем её host3
-
+>  Повторяем шаги Part 2-4, изменения коснуться параметра replication_source
 
     box.cfg{ listen = 3301,
     	logger = docker.log,
@@ -148,7 +161,8 @@ host1:
 host3:
     
     box.space.tarantools:select{}
- должны высветится три элемента 
+
+В логах должны высветится три элемента 
 
 ##################
 #Part 6 - логи  ##
@@ -166,3 +180,11 @@ host3:
 
 
 ----------
+##  Итоговые скрипты:
+Скрипты в папке cfg 
+
+host1.lua  - скрипт выполняемый на первом хостере
+
+host2.lua  - скрипт выполняемый на втором хостере
+
+host3.lua  - скрипт выполняемый на третьем хостере
