@@ -175,6 +175,10 @@ host3:
 ##################
 
     find -f docker.log
+    
+{}ранение  снапшотов и логов в папке, можно сделать через volume:
+
+    docker -v /opt/cloud/data:/var/lib/tarantool
 
 
 ########################
